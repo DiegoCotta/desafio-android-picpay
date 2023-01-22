@@ -48,7 +48,7 @@ class UserViewModelIntegrationTest {
     }
 
     @Test
-    fun `Given call getUser When return's multiple users list Than should emit Loading, Success and Success`() =
+    fun `GIVEN call getUser WHEN return's multiple users list THAN should emit Loading, Success and Success`() =
         runTest {
             viewModel.getUsers(false)
             runCurrent()
@@ -59,7 +59,7 @@ class UserViewModelIntegrationTest {
         }
 
     @Test
-    fun `Given call refresh When return's users list Than should emit Loading, Success`() =
+    fun `GIVEN call refresh WHEN return's users list THAN should emit Loading, Success`() =
         runTest {
             viewModel.getUsers(true)
             runCurrent()

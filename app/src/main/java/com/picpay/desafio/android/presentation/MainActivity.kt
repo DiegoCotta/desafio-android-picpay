@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.btRefresh.setOnClickListener {
-            viewModel.getUsers(false)
+            viewModel.getUsers(true)
         }
         viewModel.uiState.observe(this) { state ->
             when (state) {
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         if (viewModel.uiState.value == null) {
-            viewModel.getUsers(true)
+            viewModel.getUsers(false)
         }
     }
 

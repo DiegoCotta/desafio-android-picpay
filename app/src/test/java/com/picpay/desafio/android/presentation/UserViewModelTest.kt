@@ -49,7 +49,7 @@ class UserViewModelTest {
     }
 
     @Test
-    fun `Given call getUser no refresh When return's empty list Than should emit Loading and Success`() =
+    fun `GIVEN call getUser no refresh WHEN return's empty list THAN should emit Loading and Success`() =
         runTest {
             every { getUsersUseCase.invoke(GetUsersUseCase.Request(true)) } returns flow {
                 emit(
@@ -64,7 +64,7 @@ class UserViewModelTest {
         }
 
     @Test
-    fun `Given call getUser no refresh When return's users list Than should emit Loading and Success`() =
+    fun `GIVEN call getUser no refresh WHEN return's users list THAN should emit Loading and Success`() =
         runTest {
             every { getUsersUseCase.invoke(GetUsersUseCase.Request(true)) } returns flow {
                 emit(
@@ -79,7 +79,7 @@ class UserViewModelTest {
         }
 
     @Test
-    fun `Given call getUser no refresh When return's multiple users list Than should emit Loading, Success and Success `() =
+    fun `GIVEN call getUser no refresh WHEN return's multiple users list THAN should emit Loading, Success and Success`() =
         runTest {
             every { getUsersUseCase.invoke(GetUsersUseCase.Request(true)) } returns flow {
                 emit(Outcome.Success(listOf()))
@@ -94,7 +94,7 @@ class UserViewModelTest {
         }
 
     @Test
-    fun `Given call getUser no refresh When occurred error Than should emit Loading and Error`() =
+    fun `GIVEN call getUser no refresh WHEN occurred error THAN should emit Loading and Error`() =
         runTest {
             val expectedError = DataError(0, "error")
             every { getUsersUseCase.invoke(GetUsersUseCase.Request(true)) } returns flow {
@@ -110,7 +110,7 @@ class UserViewModelTest {
         }
 
     @Test
-    fun `Given call getUser is refresh When return's users list Than should emit Loading and Success`() =
+    fun `GIVEN call getUser is refresh WHEN return's users list THAN should emit Loading and Success`() =
         runTest {
             every { getUsersUseCase.invoke(GetUsersUseCase.Request(false)) } returns flow {
                 emit(
@@ -125,7 +125,7 @@ class UserViewModelTest {
         }
 
     @Test
-    fun `Given call getUser is refresh When occurred error Than should emit Loading and Error`() =
+    fun `GIVEN call getUser is refresh WHEN occurred error THAN should emit Loading and Error`() =
         runTest {
             val expectedError = DataError(0, "error")
             every { getUsersUseCase.invoke(GetUsersUseCase.Request(false)) } returns flow {
