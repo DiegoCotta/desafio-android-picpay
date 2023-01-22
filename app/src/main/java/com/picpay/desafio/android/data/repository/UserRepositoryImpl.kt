@@ -10,12 +10,8 @@ class UserRepositoryImpl constructor(
     private val userDao: UserDao
 ) : UserRepository {
 
-    override suspend fun getRemoteUsers(isGetCacheValues: Boolean): List<UserEntity> {
-        val users = remoteDataSource.getUsers().filter { it.id != null }
-        userDao.deleteAll()
-        userDao.insertAll(users)
-        return users
-    }
+    override suspend fun getRemoteUsers(): List<UserEntity> =
+        remoteDataSource.getUsers()
 
     override suspend fun getCachedUsers(): List<UserEntity> =
         userDao.getAll() ?: listOf()

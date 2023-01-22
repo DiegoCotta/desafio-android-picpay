@@ -19,7 +19,7 @@ class UserRemoteDataSourceTest {
     private val remoteDataSource = UserRemoteDataSourceImpl(api)
 
     @Test
-    fun `Given UserRemoteDataSource When call getUsers Than should return list of users `() =
+    fun `GIVEN UserRemoteDataSource WHEN call getUsers THAN should return list of users `() =
         runTest {
             val expectedUsers = listOf(
                 UserEntity("img1", "name1", 1L, "username1"),
@@ -32,21 +32,21 @@ class UserRemoteDataSourceTest {
         }
 
     @Test
-    fun `Given UserRemoteDataSource When call getUsers Than return error `() = runTest {
+    fun `GIVEN UserRemoteDataSource WHEN call getUsers THAN return error `() = runTest {
         coEvery { api.getUsers() } throws RuntimeException("dummy")
 
         assertFailsWith<RuntimeException> { remoteDataSource.getUsers() }
     }
 
     @Test
-    fun `Given UserRemoteDataSource When call getUsers Than body null `() = runTest {
+    fun `GIVEN UserRemoteDataSource WHEN call getUsers THAN body null `() = runTest {
         coEvery { api.getUsers() } returns Response.success(null)
 
         assertFailsWith<Exception> { remoteDataSource.getUsers() }
     }
 
     @Test
-    fun `Given UserRemoteDataSource When call getUsers Than should return empty list`() = runTest {
+    fun `GIVEN UserRemoteDataSource WHEN call getUsers THAN should return empty list`() = runTest {
         val expectedUsers = emptyList<UserEntity>()
 
         coEvery { api.getUsers() } returns Response.success(expectedUsers)

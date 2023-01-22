@@ -6,11 +6,10 @@ import com.picpay.desafio.android.core.DataError
 import com.picpay.desafio.android.core.Outcome
 import com.picpay.desafio.android.domain.repository.UserRepository
 import io.mockk.coEvery
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -29,13 +28,11 @@ class GetUsersUseCaseTest {
     private val exception = RuntimeException("dummy")
 
     @Test
-    fun `Given getUsersUseCase When call invoke than should return Success and Success`() =
+    fun `GIVEN call invoke with cache WHEN has cache and remote is success THAN emit return Success and Success`() =
         runTest {
-            coEvery { repository.getUser(true) } returns flow {
-                emit(listUsersEntity)
-                emit(listUsersEntity)
-            }
-
+            coEvery { repository.getCachedUsers() } returns listUsersEntity
+            coEvery { repository.getRemoteUsers() } returns listUsersEntity
+            coEvery { repository.saveUsers(any()) } just runs
             val response = getUsersUseCase.invoke(GetUsersUseCase.Request(true)).toList()
 
             assertEquals(
@@ -48,22 +45,43 @@ class GetUsersUseCaseTest {
         }
 
     @Test
-    fun `Given GetAndUpdateUsersUseCaseTest When call invoke than should return Error`() =
+    fun `GIVEN call invoke with cache WHEN cache is empty and remote is success THAN emit return  Success`() =
         runTest {
-            coEvery { repository.getUser(true) } throws exception
+            coEvery { repository.getCachedUsers() } returns listOf()
+            coEvery { repository.getRemoteUsers() } returns listUsersEntity
+            coEvery { repository.saveUsers(any()) } just runs
+            val response = getUsersUseCase.invoke(GetUsersUseCase.Request(true)).toList()
 
-            getUsersUseCase.invoke(GetUsersUseCase.Request(true)).catch {
-                assertEquals(exception, it)
-            }.collectLatest {
-                assert(false)
-            }
+            assertEquals(
+                listOf(
+                    Outcome.Success(listUsers)
+                ),
+                response
+            )
         }
 
     @Test
-    fun `Given GetAndUpdateUsersUseCaseTest When call invoke than should emit HttpException`() =
+    fun `GIVEN call invoke with cache WHEN  has cache and remote return Error THAN emit return  Success`() =
         runTest {
-            coEvery { repository.getUser(true) } returns flow {
-                throw HttpException(
+            coEvery { repository.getCachedUsers() } returns listUsersEntity
+            coEvery { repository.getRemoteUsers() } throws exception
+            coEvery { repository.saveUsers(any()) } just runs
+            val response = getUsersUseCase.invoke(GetUsersUseCase.Request(true)).toList()
+
+            assertEquals(
+                listOf(
+                    Outcome.Success(listUsers)
+                ),
+                response
+            )
+        }
+
+    @Test
+    fun `GIVEN call invoke with cache WHEN cache is empty and remote return HttpError THAN emit return error`() =
+        runTest {
+            coEvery { repository.getCachedUsers() } returns listOf()
+            coEvery { repository.getRemoteUsers() } throws
+                HttpException(
                     Response.error<ResponseBody>(
                         500,
                         ResponseBody.create(
@@ -72,8 +90,7 @@ class GetUsersUseCaseTest {
                         )
                     )
                 )
-            }
-
+            coEvery { repository.saveUsers(any()) } just runs
             val response = getUsersUseCase.invoke(GetUsersUseCase.Request(true)).toList()
 
             assertEquals(
@@ -85,11 +102,53 @@ class GetUsersUseCaseTest {
         }
 
     @Test
-    fun `Given GetAndUpdateUsersUseCaseTest When call invoke than should emit Exception`() =
+    fun `GIVEN call invoke without cache WHEN remote is success THAN should emitSuccess`() =
         runTest {
-            coEvery { repository.getUser(true) } returns flow { throw exception }
+            coEvery { repository.getCachedUsers() } returns listUsersEntity
+            coEvery { repository.getRemoteUsers() } returns listUsersEntity
+            coEvery { repository.saveUsers(any()) } just runs
+            val response = getUsersUseCase.invoke(GetUsersUseCase.Request(false)).toList()
 
-            val response = getUsersUseCase.invoke(GetUsersUseCase.Request(true)).toList()
+            assertEquals(
+                listOf(
+                    Outcome.Success(listUsers)
+                ),
+                response
+            )
+        }
+
+    @Test
+    fun `GIVEN call invoke without cache WHEN remote return HttpError THAN should Error`() =
+        runTest {
+            coEvery { repository.getCachedUsers() } returns listUsersEntity
+            coEvery { repository.getRemoteUsers() } throws
+                HttpException(
+                    Response.error<ResponseBody>(
+                        500,
+                        ResponseBody.create(
+                            "".toMediaTypeOrNull(),
+                            "some content"
+                        )
+                    )
+                )
+            coEvery { repository.saveUsers(any()) } just runs
+            val response = getUsersUseCase.invoke(GetUsersUseCase.Request(false)).toList()
+
+            assertEquals(
+                listOf(
+                    Outcome.Error(DataError(500, "HTTP 500 Response.error()"))
+                ),
+                response
+            )
+        }
+
+    @Test
+    fun `GIVEN call invoke without cache WHEN remote return Error THAN should Error`() =
+        runTest {
+            coEvery { repository.getCachedUsers() } returns listUsersEntity
+            coEvery { repository.getRemoteUsers() } throws exception
+            coEvery { repository.saveUsers(any()) } just runs
+            val response = getUsersUseCase.invoke(GetUsersUseCase.Request(false)).toList()
 
             assertEquals(
                 listOf(

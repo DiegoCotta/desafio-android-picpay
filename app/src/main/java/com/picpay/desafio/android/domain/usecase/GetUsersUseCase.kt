@@ -25,8 +25,8 @@ class GetUsersUseCase constructor(
         if (params.isGetCacheValues) {
             try {
                 val cache = postsRepository.getCachedUsers()
-                emit(Outcome.Success(UserMapper.transformToList(postsRepository.getCachedUsers())))
                 if (cache.isNotEmpty()) {
+                    emit(Outcome.Success(UserMapper.transformToList(postsRepository.getCachedUsers())))
                     isCacheSuccess = true
                 }
             } catch (ignore: Exception) {
@@ -34,7 +34,7 @@ class GetUsersUseCase constructor(
         }
 
         try {
-            val users = postsRepository.getRemoteUsers(params.isGetCacheValues)
+            val users = postsRepository.getRemoteUsers().filter { it.id != null }
             emit(Outcome.Success(UserMapper.transformToList(users)))
             postsRepository.saveUsers(users)
         } catch (error: HttpException) {
