@@ -8,8 +8,8 @@ object UserEntityMapper : BaseMapper<User, UserEntity>() {
     override fun transformTo(source: User): UserEntity =
         UserEntity(
             id = source.id,
-            username = source.username ?: "",
-            name = source.name ?: "",
-            img = source.img ?: ""
+            username = source.username,
+            name = source.name,
+            img = source.img
         )
 }
