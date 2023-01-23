@@ -1,5 +1,6 @@
 package com.picpay.desafio.android.data.repository
 
+import com.picpay.desafio.android.UsersStub.listUsers
 import com.picpay.desafio.android.UsersStub.listUsersEntity
 import com.picpay.desafio.android.data.source.local.UserDao
 import com.picpay.desafio.android.data.source.remote.UserRemoteDataSourceImpl
@@ -38,7 +39,7 @@ class UserRepositoryImplTest {
         runTest {
             coEvery { remoteDataSource.getUsers() } returns listUsersEntity
             val response = repository.getRemoteUsers()
-            assertEquals(response, listUsersEntity)
+            assertEquals(response, listUsers)
         }
 
     @Test
@@ -61,7 +62,7 @@ class UserRepositoryImplTest {
         runTest {
             coEvery { userDao.getAll() } returns listUsersEntity
             val response = repository.getCachedUsers()
-            assertEquals(listUsersEntity, response)
+            assertEquals(listUsers, response)
         }
 
     @Test
@@ -76,7 +77,7 @@ class UserRepositoryImplTest {
         runTest {
             every { userDao.deleteAll() } just runs
             every { userDao.insertAll(any()) } just runs
-            repository.saveUsers(listUsersEntity)
+            repository.saveUsers(listUsers)
             verify { userDao.deleteAll() }
             verify { userDao.insertAll(listUsersEntity) }
         }
@@ -86,6 +87,6 @@ class UserRepositoryImplTest {
         runTest {
             every { userDao.deleteAll() } throws exception
             every { userDao.insertAll(any()) } just runs
-            assertFailsWith(RuntimeException::class) { repository.saveUsers(listUsersEntity) }
+            assertFailsWith(RuntimeException::class) { repository.saveUsers(listUsers) }
         }
 }

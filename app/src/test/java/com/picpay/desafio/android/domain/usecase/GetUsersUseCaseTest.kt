@@ -1,7 +1,6 @@
 package com.picpay.desafio.android.domain.usecase
 
 import com.picpay.desafio.android.UsersStub.listUsers
-import com.picpay.desafio.android.UsersStub.listUsersEntity
 import com.picpay.desafio.android.core.DataError
 import com.picpay.desafio.android.core.Outcome
 import com.picpay.desafio.android.domain.repository.UserRepository
@@ -30,8 +29,8 @@ class GetUsersUseCaseTest {
     @Test
     fun `GIVEN call invoke with cache WHEN has cache and remote is success THAN emit return Success and Success`() =
         runTest {
-            coEvery { repository.getCachedUsers() } returns listUsersEntity
-            coEvery { repository.getRemoteUsers() } returns listUsersEntity
+            coEvery { repository.getCachedUsers() } returns listUsers
+            coEvery { repository.getRemoteUsers() } returns listUsers
             coEvery { repository.saveUsers(any()) } just runs
             val response = getUsersUseCase.invoke(GetUsersUseCase.Request(true)).toList()
 
@@ -48,7 +47,7 @@ class GetUsersUseCaseTest {
     fun `GIVEN call invoke with cache WHEN cache is empty and remote is success THAN emit return  Success`() =
         runTest {
             coEvery { repository.getCachedUsers() } returns listOf()
-            coEvery { repository.getRemoteUsers() } returns listUsersEntity
+            coEvery { repository.getRemoteUsers() } returns listUsers
             coEvery { repository.saveUsers(any()) } just runs
             val response = getUsersUseCase.invoke(GetUsersUseCase.Request(true)).toList()
 
@@ -63,7 +62,7 @@ class GetUsersUseCaseTest {
     @Test
     fun `GIVEN call invoke with cache WHEN  has cache and remote return Error THAN emit return  Success`() =
         runTest {
-            coEvery { repository.getCachedUsers() } returns listUsersEntity
+            coEvery { repository.getCachedUsers() } returns listUsers
             coEvery { repository.getRemoteUsers() } throws exception
             coEvery { repository.saveUsers(any()) } just runs
             val response = getUsersUseCase.invoke(GetUsersUseCase.Request(true)).toList()
@@ -104,8 +103,8 @@ class GetUsersUseCaseTest {
     @Test
     fun `GIVEN call invoke without cache WHEN remote is success THAN should emitSuccess`() =
         runTest {
-            coEvery { repository.getCachedUsers() } returns listUsersEntity
-            coEvery { repository.getRemoteUsers() } returns listUsersEntity
+            coEvery { repository.getCachedUsers() } returns listUsers
+            coEvery { repository.getRemoteUsers() } returns listUsers
             coEvery { repository.saveUsers(any()) } just runs
             val response = getUsersUseCase.invoke(GetUsersUseCase.Request(false)).toList()
 
@@ -120,7 +119,7 @@ class GetUsersUseCaseTest {
     @Test
     fun `GIVEN call invoke without cache WHEN remote return HttpError THAN should Error`() =
         runTest {
-            coEvery { repository.getCachedUsers() } returns listUsersEntity
+            coEvery { repository.getCachedUsers() } returns listUsers
             coEvery { repository.getRemoteUsers() } throws
                 HttpException(
                     Response.error<ResponseBody>(
@@ -145,7 +144,7 @@ class GetUsersUseCaseTest {
     @Test
     fun `GIVEN call invoke without cache WHEN remote return Error THAN should Error`() =
         runTest {
-            coEvery { repository.getCachedUsers() } returns listUsersEntity
+            coEvery { repository.getCachedUsers() } returns listUsers
             coEvery { repository.getRemoteUsers() } throws exception
             coEvery { repository.saveUsers(any()) } just runs
             val response = getUsersUseCase.invoke(GetUsersUseCase.Request(false)).toList()

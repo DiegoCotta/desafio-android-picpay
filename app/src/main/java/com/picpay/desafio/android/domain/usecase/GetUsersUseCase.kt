@@ -4,7 +4,6 @@ import com.picpay.desafio.android.core.DataError
 import com.picpay.desafio.android.core.FlowUseCase
 import com.picpay.desafio.android.core.Outcome
 import com.picpay.desafio.android.core.Params
-import com.picpay.desafio.android.domain.mapper.UserMapper
 import com.picpay.desafio.android.domain.model.User
 import com.picpay.desafio.android.domain.repository.UserRepository
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +25,7 @@ class GetUsersUseCase constructor(
             try {
                 val cache = postsRepository.getCachedUsers()
                 if (cache.isNotEmpty()) {
-                    emit(Outcome.Success(UserMapper.transformToList(postsRepository.getCachedUsers())))
+                    emit(Outcome.Success(postsRepository.getCachedUsers()))
                     isCacheSuccess = true
                 }
             } catch (ignore: Exception) {
@@ -34,8 +33,8 @@ class GetUsersUseCase constructor(
         }
 
         try {
-            val users = postsRepository.getRemoteUsers().filter { it.id != null }
-            emit(Outcome.Success(UserMapper.transformToList(users)))
+            val users = postsRepository.getRemoteUsers().filter { it.id != 0L }
+            emit(Outcome.Success(users))
             postsRepository.saveUsers(users)
         } catch (error: HttpException) {
             if (!isCacheSuccess) {
