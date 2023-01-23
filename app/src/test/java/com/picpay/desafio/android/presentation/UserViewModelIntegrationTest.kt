@@ -26,7 +26,7 @@ class UserViewModelIntegrationTest {
     @get:Rule
     var rule = InstantTaskExecutorRule()
 
-    private val repository = UserRepositoryImpl(UserRemoteDataSourceFake(), UserDaoFake())
+    private val repository = UserRepositoryImpl(UserRemoteDataSourceFake(false), UserDaoFake(false))
     private val getUsersUseCase = GetUsersUseCase(repository)
 
     private var observer = mockk<Observer<UserViewState>>(relaxed = true)

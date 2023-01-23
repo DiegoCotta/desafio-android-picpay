@@ -4,6 +4,7 @@ import com.picpay.desafio.android.UsersStub.listUsers
 import com.picpay.desafio.android.UsersStub.listUsersEntity
 import com.picpay.desafio.android.UsersStub.user
 import com.picpay.desafio.android.UsersStub.userEntity
+import com.picpay.desafio.android.data.mapper.UserMapper
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

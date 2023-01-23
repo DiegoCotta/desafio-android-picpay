@@ -1,8 +1,10 @@
 package com.picpay.desafio.android.data.repository
 
-import com.picpay.desafio.android.data.entity.UserEntity
+import com.picpay.desafio.android.data.mapper.UserEntityMapper
+import com.picpay.desafio.android.data.mapper.UserMapper
 import com.picpay.desafio.android.data.source.local.UserDao
 import com.picpay.desafio.android.data.source.remote.UserRemoteDataSource
+import com.picpay.desafio.android.domain.model.User
 import com.picpay.desafio.android.domain.repository.UserRepository
 
 class UserRepositoryImpl constructor(
@@ -10,14 +12,14 @@ class UserRepositoryImpl constructor(
     private val userDao: UserDao
 ) : UserRepository {
 
-    override suspend fun getRemoteUsers(): List<UserEntity> =
-        remoteDataSource.getUsers()
+    override suspend fun getRemoteUsers(): List<User> =
+        UserMapper.transformToList(remoteDataSource.getUsers())
 
-    override suspend fun getCachedUsers(): List<UserEntity> =
-        userDao.getAll() ?: listOf()
+    override suspend fun getCachedUsers(): List<User> =
+        UserMapper.transformToList(userDao.getAll() ?: listOf())
 
-    override suspend fun saveUsers(users: List<UserEntity>) {
+    override suspend fun saveUsers(users: List<User>) {
         userDao.deleteAll()
-        userDao.insertAll(users)
+        userDao.insertAll(UserEntityMapper.transformToList(users))
     }
 }
